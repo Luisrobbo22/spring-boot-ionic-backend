@@ -4,11 +4,10 @@ import java.util.Optional;
 
 import com.luisrobbo.cursomc.domain.Categoria;
 import com.luisrobbo.cursomc.repositories.CategoriaRepository;
+import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-
-import com.luisrobbo.cursomc.domain.Cliente;
-import com.luisrobbo.cursomc.repositories.ClienteRepository;
 import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
@@ -32,4 +31,13 @@ public class CategoriaService {
         find(categoria.getId());
         return repo.save(categoria);
     }
+    public void delete(Integer id) {
+        find(id);
+        try {
+            repo.deleteById(id);
+        } catch (DataIntegrityViolationException e){
+            throw new DataIntegretyException("Não é possível deletar uma categoria com produtos");
+        }
+    }
 }
+

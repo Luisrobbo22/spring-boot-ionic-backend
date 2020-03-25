@@ -20,4 +20,9 @@ public class ClienteService {
 		return obj.orElseThrow(() -> new ObjectNotFoundException(
 				"Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
 	}
+
+    public void delete(Integer id) {
+		//find(id);
+		repo.deleteById(id);
+    }
 }
