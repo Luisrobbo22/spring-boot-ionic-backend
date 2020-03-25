@@ -1,5 +1,6 @@
 package com.luisrobbo.cursomc.services;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.luisrobbo.cursomc.domain.Categoria;
@@ -39,5 +40,10 @@ public class CategoriaService {
             throw new DataIntegretyException("Não é possível deletar uma categoria com produtos");
         }
     }
+
+    public List<Categoria> findAll(){
+        return repo.findAll();
+    }
+
 }
 
