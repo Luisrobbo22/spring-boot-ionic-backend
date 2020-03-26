@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.luisrobbo.cursomc.domain.Categoria;
+import com.luisrobbo.cursomc.domain.Cliente;
 import com.luisrobbo.cursomc.dto.CategoriaDTO;
 import com.luisrobbo.cursomc.repositories.CategoriaRepository;
 import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
@@ -32,30 +33,39 @@ public class CategoriaService {
         return repo.save(categoria);
     }
 
+
+
     public Categoria update(Categoria categoria) {
-        find(categoria.getId());
-        return repo.save(categoria);
+        Categoria newCategoria = find(categoria.getId());
+        updateData(newCategoria, categoria);
+        return repo.save(newCategoria);
     }
+
+
     public void delete(Integer id) {
         find(id);
         try {
             repo.deleteById(id);
-        } catch (DataIntegrityViolationException e){
+        } catch (DataIntegrityViolationException e) {
             throw new DataIntegretyException("Não é possível deletar uma categoria com produtos");
         }
     }
 
-    public List<Categoria> findAll(){
+    public List<Categoria> findAll() {
         return repo.findAll();
     }
 
-    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction){
+    public Page<Categoria> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         return repo.findAll(pageRequest);
     }
 
-    public Categoria fromDTO(CategoriaDTO categoriaDTO){
-        return  new Categoria(categoriaDTO.getId(), categoriaDTO.getNome());
+    public Categoria fromDTO(CategoriaDTO categoriaDTO) {
+        return new Categoria(categoriaDTO.getId(), categoriaDTO.getNome());
+    }
+
+    private void updateData(Categoria newCategoria, Categoria categoria) {
+        newCategoria.setNome(categoria.getNome());
     }
 
 }
