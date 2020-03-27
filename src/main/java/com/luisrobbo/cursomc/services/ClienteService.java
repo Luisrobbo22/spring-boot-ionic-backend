@@ -6,7 +6,6 @@ import com.luisrobbo.cursomc.domain.Endereco;
 import com.luisrobbo.cursomc.domain.enums.TipoCliente;
 import com.luisrobbo.cursomc.dto.ClienteDTO;
 import com.luisrobbo.cursomc.dto.ClienteNewDTO;
-import com.luisrobbo.cursomc.repositories.CidadeRepository;
 import com.luisrobbo.cursomc.repositories.ClienteRepository;
 import com.luisrobbo.cursomc.repositories.EnderecoRepository;
 import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
