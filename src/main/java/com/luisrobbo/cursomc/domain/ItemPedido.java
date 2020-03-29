@@ -38,6 +38,11 @@ public class ItemPedido implements Serializable {
         this.id = id;
     }
 
+
+    public double getSubTotal(){
+        return (preco - desconto) * quantidade;
+    }
+
     public Double getDesconto() {
         return desconto;
     }
