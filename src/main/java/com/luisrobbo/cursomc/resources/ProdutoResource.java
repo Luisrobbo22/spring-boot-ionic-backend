@@ -1,7 +1,6 @@
 package com.luisrobbo.cursomc.resources;
 
 import com.luisrobbo.cursomc.domain.Produto;
-import com.luisrobbo.cursomc.dto.CategoriaDTO;
 import com.luisrobbo.cursomc.dto.ProdutoDTO;
 import com.luisrobbo.cursomc.resources.utils.URL;
 import com.luisrobbo.cursomc.services.ProdutoService;
@@ -25,6 +24,12 @@ public class ProdutoResource {
 		return ResponseEntity.ok().body(produto);
 	}
 
+	@GetMapping(value = "/")
+	public ResponseEntity<List<Produto>> findAll(){
+		List<Produto> produtos = service.findAll();
+		return ResponseEntity.ok().body(produtos);
+	}
+
 	@GetMapping()
 	public ResponseEntity<Page<ProdutoDTO>> findPage(
 			@RequestParam(value = "nome", defaultValue = "") String nome,
@@ -39,6 +44,5 @@ public class ProdutoResource {
 		Page<ProdutoDTO> listDTO = produtos.map(prod -> new ProdutoDTO(prod));
 		return ResponseEntity.ok().body(listDTO);
 	}
-
 
 }

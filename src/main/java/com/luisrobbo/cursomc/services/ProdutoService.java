@@ -30,6 +30,12 @@ public class ProdutoService {
         return obj.orElseThrow(() -> new ObjectNotFoundException(
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Produto.class.getName()));
     }
+    public List<Produto> findAll(){
+        Optional<List<Produto>> produtos  = Optional.of(repository.findAll());
+
+        return produtos.orElseThrow(() -> new ObjectNotFoundException(
+                "Produtos não encontrado! " + Produto.class.getName()));
+    }
 
     public Page<Produto> search(String nome, List<Integer> ids,
                                 Integer page, Integer linesPerPage,
