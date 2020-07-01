@@ -1,6 +1,9 @@
 package com.luisrobbo.cursomc.config;
 
 import com.luisrobbo.cursomc.services.DBService;
+import com.luisrobbo.cursomc.services.EmailService;
+import com.luisrobbo.cursomc.services.SmtpEmailService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -13,21 +16,24 @@ import java.text.ParseException;
 @Profile("dev")
 public class DevConfig {
 
+	@Autowired
+	private DBService dbService;
 
-    @Autowired
-    private DBService dbService;
+	@Value("${spring.jpa.hibernate.ddl-auto}")
+	private String strategy;
 
-    @Value("${spring.jpa.hibernate.ddl-auto}")
-    private String strategy;
+	@Bean
+	public boolean initantiateDatabase() throws ParseException {
+		if (!"create".equals(strategy)) {
+			return false;
+		}
 
-
-    @Bean
-    public boolean initantiateDatabase() throws ParseException {
-       if (!"create".equals(strategy)){
-           return false;
-       }
-
-        dbService.instatiateDatabase();
-        return true;
-    }
+		dbService.instatiateDatabase();
+		return true;
+	}
+	
+	@Bean
+	public EmailService emailService() {
+		return new SmtpEmailService();
+	}
 }
