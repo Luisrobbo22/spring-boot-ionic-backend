@@ -1,19 +1,19 @@
 package com.luisrobbo.cursomc.services;
 
-import com.luisrobbo.cursomc.domain.Categoria;
-import com.luisrobbo.cursomc.domain.Pedido;
-import com.luisrobbo.cursomc.domain.Produto;
-import com.luisrobbo.cursomc.repositories.CategoriaRepository;
-import com.luisrobbo.cursomc.repositories.ProdutoRepository;
-import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import com.luisrobbo.cursomc.domain.Categoria;
+import com.luisrobbo.cursomc.domain.Produto;
+import com.luisrobbo.cursomc.repositories.CategoriaRepository;
+import com.luisrobbo.cursomc.repositories.ProdutoRepository;
+import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class ProdutoService {
