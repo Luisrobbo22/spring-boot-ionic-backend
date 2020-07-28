@@ -69,4 +69,9 @@ public class UserSS implements UserDetails {
 		return true;
 	}
 
+	// testa se o user tem um perfil xpto
+	public boolean hasRole(Perfil perfil) {
+		return getAuthorities().contains(new SimpleGrantedAuthority(perfil.getDescricao()));
+	}
+
 }

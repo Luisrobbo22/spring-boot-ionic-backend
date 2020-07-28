@@ -1,15 +1,8 @@
 package com.luisrobbo.cursomc.services;
 
-import com.luisrobbo.cursomc.domain.Cidade;
-import com.luisrobbo.cursomc.domain.Cliente;
-import com.luisrobbo.cursomc.domain.Endereco;
-import com.luisrobbo.cursomc.domain.enums.TipoCliente;
-import com.luisrobbo.cursomc.dto.ClienteDTO;
-import com.luisrobbo.cursomc.dto.ClienteNewDTO;
-import com.luisrobbo.cursomc.repositories.ClienteRepository;
-import com.luisrobbo.cursomc.repositories.EnderecoRepository;
-import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
-import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
@@ -19,8 +12,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.luisrobbo.cursomc.domain.Cidade;
+import com.luisrobbo.cursomc.domain.Cliente;
+import com.luisrobbo.cursomc.domain.Endereco;
+import com.luisrobbo.cursomc.domain.enums.Perfil;
+import com.luisrobbo.cursomc.domain.enums.TipoCliente;
+import com.luisrobbo.cursomc.dto.ClienteDTO;
+import com.luisrobbo.cursomc.dto.ClienteNewDTO;
+import com.luisrobbo.cursomc.repositories.ClienteRepository;
+import com.luisrobbo.cursomc.repositories.EnderecoRepository;
+import com.luisrobbo.cursomc.security.UserSS;
+import com.luisrobbo.cursomc.services.exceptions.AuthorizationException;
+import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
+import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
 
 @Service
 public class ClienteService {
@@ -35,6 +39,12 @@ public class ClienteService {
     private BCryptPasswordEncoder pe;
 
     public Cliente find(Integer id) {
+    	
+    	UserSS user = UserService.authenticated();
+    	if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+    		throw new AuthorizationException("Acesso negado");
+    	}
+    	
         Optional<Cliente> obj = repo.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException(
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
