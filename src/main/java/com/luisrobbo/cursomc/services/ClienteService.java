@@ -1,17 +1,5 @@
 package com.luisrobbo.cursomc.services;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.luisrobbo.cursomc.domain.Cidade;
 import com.luisrobbo.cursomc.domain.Cliente;
 import com.luisrobbo.cursomc.domain.Endereco;
@@ -25,6 +13,19 @@ import com.luisrobbo.cursomc.security.UserSS;
 import com.luisrobbo.cursomc.services.exceptions.AuthorizationException;
 import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
 import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ClienteService {
@@ -37,6 +38,9 @@ public class ClienteService {
     
     @Autowired
     private BCryptPasswordEncoder pe;
+
+    @Autowired
+    private S3Service s3Service;
 
     public Cliente find(Integer id) {
     	
@@ -111,6 +115,10 @@ public class ClienteService {
         cliente = repo.save(cliente);
         enderecoRepository.saveAll(cliente.getEnderecos());
         return cliente;
+    }
+
+    public URI uploadProfilePicture(MultipartFile multipartFile){
+        return s3Service.uploadFile(multipartFile);
     }
 
 
