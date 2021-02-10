@@ -14,6 +14,7 @@ import com.luisrobbo.cursomc.services.exceptions.AuthorizationException;
 import com.luisrobbo.cursomc.services.exceptions.DataIntegretyException;
 import com.luisrobbo.cursomc.services.exceptions.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
@@ -35,20 +37,26 @@ public class ClienteService {
 
     @Autowired
     private EnderecoRepository enderecoRepository;
-    
+
     @Autowired
     private BCryptPasswordEncoder pe;
 
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private ImageService imageService;
+
+    @Value("${img.prefix.client.profile}")
+    private String prefix;
+
     public Cliente find(Integer id) {
-    	
-    	UserSS user = UserService.authenticated();
-    	if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
-    		throw new AuthorizationException("Acesso negado");
-    	}
-    	
+
+        UserSS user = UserService.authenticated();
+        if (user == null || !user.hasRole(Perfil.ADMIN) && !id.equals(user.getId())) {
+            throw new AuthorizationException("Acesso negado");
+        }
+
         Optional<Cliente> obj = repo.findById(id);
         return obj.orElseThrow(() -> new ObjectNotFoundException(
                 "Objeto não encontrado! Id: " + id + ", Tipo: " + Cliente.class.getName()));
@@ -79,7 +87,7 @@ public class ClienteService {
     }
 
     public Cliente fromDTO(ClienteDTO clienteDTO) {
-        return new Cliente(clienteDTO.getId(), clienteDTO.getNome(), clienteDTO.getEmail(), null, null,null);
+        return new Cliente(clienteDTO.getId(), clienteDTO.getNome(), clienteDTO.getEmail(), null, null, null);
     }
 
     public Cliente fromDTO(ClienteNewDTO clienteNewDTO) {
@@ -117,19 +125,18 @@ public class ClienteService {
         return cliente;
     }
 
-    public URI uploadProfilePicture(MultipartFile multipartFile){
+    public URI uploadProfilePicture(MultipartFile multipartFile) {
 
         UserSS user = UserService.authenticated();
-        if(user == null){
+        if (user == null) {
             throw new AuthorizationException("Acesso Negado");
         }
-        URI uri = s3Service.uploadFile(multipartFile);
 
-        Cliente cliente = find(user.getId());
-        cliente.setImageUrl(uri.toString());
-        repo.save(cliente);
+        BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
+        String fileName = prefix + user.getId() + "jpg";
 
-        return uri;
+        return s3Service.uploadFile(imageService.getInputStream(jpgImage, "jpg"), fileName, "image");
+
     }
 
 
