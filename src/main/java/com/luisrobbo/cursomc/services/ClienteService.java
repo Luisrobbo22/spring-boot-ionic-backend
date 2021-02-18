@@ -84,6 +84,21 @@ public class ClienteService {
         return repo.findAll();
     }
 
+
+    public Cliente findByEmail(String email) {
+        UserSS user = UserService.authenticated();
+        if (user == null || user.hasRole(Perfil.ADMIN) && !email.equals(user.getUsername())) {
+            throw new AuthorizationException("Acesso negado");
+        }
+
+        Cliente cliente = repo.findByEmail(email);
+        if (cliente == null) {
+            throw new ObjectNotFoundException("Cliente não encontrado! ID: " + user.getId()
+                    + ", Tipo: " + Cliente.class.getName());
+        }
+        return cliente;
+    }
+
     public Page<Cliente> findPage(Integer page, Integer linesPerPage, String orderBy, String direction) {
         PageRequest pageRequest = PageRequest.of(page, linesPerPage, Sort.Direction.valueOf(direction), orderBy);
         return repo.findAll(pageRequest);
@@ -137,11 +152,11 @@ public class ClienteService {
 
         BufferedImage jpgImage = imageService.getJpgImageFromFile(multipartFile);
 
-        //deixa a imagem quadrada
+        // deixa a imagem quadrada
         jpgImage = imageService.cropSquare(jpgImage);
 
         // redefine o tamanho
-        jpgImage = imageService.resize(jpgImage,size);
+        jpgImage = imageService.resize(jpgImage, size);
 
         String fileName = prefix + user.getId() + "jpg";
 
